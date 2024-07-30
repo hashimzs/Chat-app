@@ -1,0 +1,75 @@
+﻿@using chatbot2.Components
+@inherits LayoutComponentBase
+@using Microsoft.JSInterop
+@using chatbot2.Services
+@inject IJSRuntime JSRuntime
+
+@if (render)
+{
+    <CascadingValue Value="IsCollapsed">
+        <section class="layout-wrapper @SideBarClass">
+            <Sidebar IsCollapsed="IsCollapsed" IsExpanded="IsExpanded" />
+            <div class="body-wrapper">
+                @Body
+            </div>
+        </section>
+
+        <Microsoft.AspNetCore.Components.Sections.SectionContent SectionName="SidebarToggle">
+            <div class="sidebar-fa-bar @SideBarClass">
+                <IconButton IconClass="fa-solid fa-bars" OnClick="ToggleBarClickedHandler" />
+            </div>
+        </Microsoft.AspNetCore.Components.Sections.SectionContent>
+
+        <Microsoft.AspNetCore.Components.Sections.SectionContent SectionName="BodyToggle">
+            <div class="body-fa-bar @SideBarClass">
+                <IconButton IconClass="fa-solid fa-bars" OnClick="ToggleBarClickedHandler" />
+            </div>
+        </Microsoft.AspNetCore.Components.Sections.SectionContent>
+        <div class="close-sidebar @SideBarClass2" @onclick="()=>IsExpanded=!IsExpanded">
+        </div>
+    </CascadingValue>
+}
+@code {
+    [Inject]
+    public AuthService authService { get; set; } = null!;
+    [Inject]
+    public NavigationManager navigationManager { get; set; } = null!;
+
+    public bool render { get; set; }
+
+    /// <summary>
+    /// this bool is for collapsing the sidebar when the screen is above 1000px
+    /// </summary>
+    public bool IsCollapsed { get; set; }
+    /// <summary>
+    /// this bool is for expanding the sidebar when the screen is below 1000px
+    /// </summary>
+    public bool IsExpanded { get; set; }
+    public string SideBarClass { get => IsCollapsed ? "collapse" : ""; }
+    public string SideBarClass2 { get => IsExpanded ? "expand" : ""; }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!await this.authService.IsLoggedIn())
+            navigationManager.NavigateTo("login");
+        else
+            render = true;
+    }
+
+    private async Task<int> GetScreenWidth()
+    {
+        return await JSRuntime.InvokeAsync<int>("getScreenWidth");
+    }
+
+    public async Task ToggleBarClickedHandler()
+    {
+        var width = await GetScreenWidth();
+
+        if (width > 1000)
+            IsCollapsed = !IsCollapsed;
+        else
+            IsExpanded = !IsExpanded;
+    }
+
+}

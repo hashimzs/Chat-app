@@ -1,0 +1,98 @@
+﻿@using Chatbot.Application.Shared
+@using chatbot2.Components
+@using chatbot2.Services
+@implements IDisposable
+<div class="sidebar @SideBarClass @SideBarClass2">
+    <div class="sidebar-header">
+        <div class="logo-container">
+            <img src="Logo.png" />
+        </div>
+        @if (!IsCollapsed)
+        {
+
+            <div class="sidebar-header-actions">
+                <Microsoft.AspNetCore.Components.Sections.SectionOutlet SectionName="SidebarToggle" />
+                <IconButton IconClass="fa-solid fa-pen-to-square" OnClick="NavigateToHome" />
+            </div>
+        }
+    </div>
+    <div class="sidebar-content-outer">
+        <div class="sidebar-content-inner">
+            <section class="sidebar-content-section">
+                <Link Class="new-chat-link" IconClass="fa-solid fa-pen-to-square" Text="New chat" Href="" />
+                @if (!IsCollapsed)
+                {
+                    @foreach (var chat in Chats)
+                    {
+                        <ChatLink ChatInfo="chat" />
+                    }
+                }
+                <Link IconClass="fa-solid fa-comment-dots" Text="All chats" Href="chats" />
+            </section>
+            <section class="sidebar-content-section">
+                <Link IconClass="fa-solid fa-user" Text="Profile" Href="profile" />
+            </section>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    [Inject]
+    public ChatService chatService { get; set; } = null!;
+    [Inject]
+    public NavigationManager navigationManager { get; set; } = null!;
+    /// <summary>
+    /// this bool is for collapsing the sidebar when the screen is above 1000px
+    /// </summary>
+    [Parameter]
+    public bool IsCollapsed { get; set; }
+
+    /// <summary>
+    /// this bool is for expanding the sidebar when the screen is below 1000px
+    /// </summary>
+    [Parameter]
+    public bool IsExpanded { get; set; }
+    public string SideBarClass { get => IsCollapsed ? "collapse" : ""; }
+    public string SideBarClass2 { get => IsExpanded ? "expand" : ""; }
+    public List<ChatInfoDto> Chats { get; set; } = new();
+    public PaginationParams paginationParams { get; set; } = new();
+
+    public void NavigateToHome()
+    {
+        navigationManager.NavigateTo("");
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var response = await this.chatService.GetChats(paginationParams);
+        Chats = response.List;
+    }
+    protected override void OnInitialized()
+    {
+        chatService.OnChatDeleted += RemoveChat;
+        chatService.OnChatStarted += OnChatStartedHandler;
+    }
+
+    public void OnChatStartedHandler(ChatInfoDto chat)
+    {
+        if (paginationParams.PageSize == Chats.Count)
+            return;
+
+        Chats.Add(chat);
+
+        StateHasChanged();
+    }
+
+    public void RemoveChat(int Id)
+    {
+        Chats.RemoveAll(v => v.Id == Id);
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        chatService.OnChatDeleted -= RemoveChat;
+        chatService.OnChatStarted -= OnChatStartedHandler;
+    }
+}
