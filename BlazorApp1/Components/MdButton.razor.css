@@ -1,0 +1,24 @@
+﻿button{
+    background-color:var(--accent-base);
+    color:white;
+    border:none;
+    padding:0.2rem;
+    font-size:1rem;
+    border-radius:0.2rem;
+    transition:0.2s ease;
+    position:relative;
+}
+
+
+.loading-container {
+    position: absolute;
+    height:100%;
+    padding:0.2rem;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+}
+
+button:hover{
+    background-color:var(--accent-emphasis)
+}

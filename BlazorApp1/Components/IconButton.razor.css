@@ -1,0 +1,9 @@
+﻿i{
+    border-radius:50%;
+    padding:10px;
+    cursor:pointer;
+}
+
+i:hover{
+    background:var(--button-hover)
+}

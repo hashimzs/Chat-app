@@ -1,0 +1,30 @@
+﻿.page-container {
+    height: 100%;
+    display: grid;
+    grid-template-rows: 50px 1fr;
+    background-color: var(--bg-base);
+}
+
+.top-section {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    align-items: center;
+    background-color: var(--bg-faint);
+    border-bottom: 1px solid var(--border-base);
+    padding: 0 1rem;
+}
+
+.main-section {
+    margin: 0 auto;
+    width: min(var(--body-max-width),100%);
+    overflow: auto;
+    padding: 0 1rem;
+}
+
+.bottom-section {
+    display: flex;
+    align-items: center;
+    width: min(var(--body-max-width),100%);
+    margin: auto;
+    padding: 0.5rem 0 1rem;
+}

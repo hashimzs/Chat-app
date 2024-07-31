@@ -1,0 +1,23 @@
+﻿section {
+    height: 100vh;
+    width: 100%;
+    background-color: var(--accent-base);
+    display: grid;
+    place-items: center;
+}
+
+::deep form {
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    background-color: var(--bg-base);
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    width: 20rem;
+}
+
+.error {
+    color: orangered;
+    font-size: 0.8rem;
+    text-align: center;
+}

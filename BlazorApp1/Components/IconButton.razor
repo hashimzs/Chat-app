@@ -1,0 +1,12 @@
+﻿
+
+<i tabindex="1" class="@IconClass" @onclick="OnClick" title="@ToolTip"></i>
+
+@code {
+    [Parameter]
+    public string IconClass { get; set; } = string.Empty;
+    [Parameter]
+    public EventCallback OnClick { get; set; }
+    [Parameter]
+    public string ToolTip { get; set; } = string.Empty;
+}

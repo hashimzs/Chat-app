@@ -1,0 +1,30 @@
+﻿@page "/Register"
+@layout EmptyLayout
+@using Library.Components
+@using Library.Services
+@using library.Dtos
+
+<FormPage Model="registerReqDto" Title="Register" OnValidSumbit="RegisterClickedHandler">
+    <MdInputBox Title="Username" @bind-Value="registerReqDto.UserName" ValidationFor="()=>registerReqDto.UserName" />
+    <MdInputBox Title="Email" @bind-Value="registerReqDto.Email" ValidationFor="()=>registerReqDto.Email" />
+    <MdInputBox Type="password" Title="Password" @bind-Value="registerReqDto.Password" ValidationFor="()=>registerReqDto.Password" />
+    <p style="font-size:0.8rem">already have an account <a href="login">login</a></p>
+    <MdButton Type="submit">
+        Register
+    </MdButton>
+</FormPage>
+
+@code {
+    [Inject]
+    public AuthService authService { get; set; } = null!;
+    [Inject]
+    public NavigationManager navigationManager { get; set; } = null!;
+    public RegisterReqDto registerReqDto { get; set; } = new();
+
+    public async Task RegisterClickedHandler()
+    {
+        await this.authService.Register(registerReqDto);
+
+        navigationManager.NavigateTo("login");
+    }
+}

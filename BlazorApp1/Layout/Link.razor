@@ -1,0 +1,34 @@
+﻿
+<a tabindex="1" href="@Href" class="link @SideBarClass @Class" @oncontextmenu="OnMouseRightClick" @oncontextmenu:preventDefault="@OnMouseRightClick.HasDelegate" @onblur="OnBlur">
+    @if (!string.IsNullOrEmpty(IconClass))
+    {
+        <i class="@IconClass"></i>
+    }
+    @if (!string.IsNullOrEmpty(Text))
+    {
+        <span class="link-text">
+            @Text
+        </span>
+    }
+    @ChildContent                           
+</a>
+
+@code {
+    [Parameter]
+    public string Class { get; set; } = string.Empty;
+    [Parameter]
+    public string Href { get; set; } = string.Empty;
+    [Parameter]
+    public string IconClass { get; set; } = string.Empty;
+    [Parameter]
+    public string Text { get; set; } = string.Empty;
+    [CascadingParameter]
+    public bool IsCollapsed { get; set; }
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+    [Parameter]
+    public EventCallback<MouseEventArgs> OnMouseRightClick { get; set; }
+    [Parameter]
+    public EventCallback OnBlur { get; set; }
+    public string SideBarClass { get => IsCollapsed ? "collapse" : ""; }
+}

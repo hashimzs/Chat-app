@@ -1,0 +1,76 @@
+﻿@page "/profile"
+@using Blazored.LocalStorage
+@using System.Security.Claims
+@using Library.Layout
+@using Library.Services
+@using library.helper
+@layout MainLayout
+
+
+@if (Claims != null)
+{
+    <PageLayout Title="Profile">
+        <div class="page-container">
+            <div>
+                <div class="section-title">
+                    User data
+                </div>
+                <div class="profile-section">
+                    <div class="user-outer-container">
+                        <div class="user-container">
+                            <div class="user-image">
+                                @Claims.First(v => v.Type == "unique_name").Value.ToUpper().First()
+                            </div>
+                            <div class="user-info">
+                                <div class="user-name">
+                                    @Claims.First(v => v.Type == "unique_name").Value
+                                </div>
+                                <div class="user-email">
+                                    @Claims.First(v => v.Type == "email").Value
+                                </div>
+                            </div>
+                        </div>
+                        <chatbot2.Components.MdButton OnClick="authService.Logout">
+                            Logout
+                        </chatbot2.Components.MdButton>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div class="section-title">
+                    Appearance
+                </div>
+                <div class="profile-section">
+                    <Microsoft.AspNetCore.Components.Sections.SectionOutlet SectionName="ThemeSwitcher" />
+                </div>
+            </div>
+        </div>
+    </PageLayout>
+}
+
+@code {
+    [Inject]
+    public AuthService authService { get; set; } = null!;
+    [Inject]
+    public ILocalStorageService localStorageService { get; set; } = null!;
+
+    public IEnumerable<Claim>? Claims { get; set; }
+
+    public bool IsDark { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        IsDark = await this.localStorageService.GetItemAsync<bool>("IsDark");
+        var token = await this.localStorageService.GetItemAsync<string>("token");
+
+        if (token == null) return;
+
+        Claims = JwtParser.ParseClaimsFromJwt(token);
+    }
+
+    public async Task SetIsDark(bool value)
+    {
+        IsDark = value;
+        await this.localStorageService.SetItemAsync<bool>("IsDark", value);
+    }
+}

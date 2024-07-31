@@ -1,0 +1,43 @@
+﻿@using System.Linq.Expressions
+<div>
+    <div class="input-container @FilledClass">
+        <div class="input-title">
+            @Title
+        </div>
+        <input @bind-value="Value" type="@Type" />
+
+    </div>
+    @if (ValidationFor != null)
+    {
+        <div class="validation-messages">
+            <ValidationMessage For="ValidationFor" />
+        </div>
+    }
+</div>
+
+
+@code {
+    [Parameter]
+    public string Type { get; set; } = string.Empty;
+    [Parameter]
+    public string Title { get; set; } = string.Empty;
+    [Parameter]
+    public string Value
+    {
+        get => _value; set
+        {
+            if (_value == value) return;
+            _value = value;
+            ValueChanged.InvokeAsync(value);
+        }
+    }
+    [Parameter]
+    public EventCallback<string> ValueChanged { get; set; }
+    [Parameter]
+    public Expression<Func<object>>? ValidationFor { get; set; }
+
+    public string FilledClass { get => string.IsNullOrEmpty(Value) ? "" : "filled"; }
+
+    private string _value { get; set; } = string.Empty;
+
+}

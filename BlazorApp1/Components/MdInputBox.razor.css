@@ -1,0 +1,47 @@
+﻿
+.input-container {
+    width: 100%;
+    position: relative;
+    margin-top: 1rem;
+}
+
+input {
+    width: 100%;
+    background-color: var(--bg-base);
+    border: 1px solid var(--border-base);
+    border-radius: 0.2rem;
+    padding: 0.2rem;
+}
+
+    input:focus, .input-container.filled input {
+        outline: 2px solid var(--accent-base);
+    }
+
+.input-title {
+    position: absolute;
+    left: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--border-base);
+    font-size: 0.8rem;
+    transition: 0.2s ease;
+    pointer-events: none;
+}
+
+.input-container:focus-within .input-title, .input-container.filled .input-title {
+    color: var(--accent-base);
+    font-size: 1rem;
+    top: -1rem;
+}
+
+.validation-messages{
+    display:flex;
+    flex-direction:column;
+    gap:0.3rem;
+    margin-top:0.5rem;
+}
+
+
+::deep .validation-message {
+    font-size: 0.8rem;
+}

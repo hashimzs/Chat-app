@@ -1,0 +1,29 @@
+﻿@typeparam TValue
+
+<div class="radio-container" @onclick="OnClickHandler">
+    <div class="radio-dot @ActiveClass">
+    </div>
+    <div class="radio-label">
+        @Label
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string Label { get; set; } = string.Empty;
+    [Parameter]
+    public TValue Value { get; set; }
+    [Parameter]
+    public EventCallback<TValue> ValueChanged { get; set; }
+
+    [Parameter]
+    public TValue FieldValue { get; set; } = default!;
+
+    public void OnClickHandler()
+    {
+        Value = FieldValue;
+        ValueChanged.InvokeAsync(FieldValue);
+    }
+    public string ActiveClass { get => EqualityComparer<TValue>.Default.Equals(FieldValue, Value) ? "active" : ""; }
+
+}

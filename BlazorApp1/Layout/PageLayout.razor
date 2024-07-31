@@ -1,0 +1,35 @@
+﻿
+
+<div class="page-container">
+    <div class="top-section">
+        <div>
+            <Microsoft.AspNetCore.Components.Sections.SectionOutlet SectionName="BodyToggle" />
+        </div>
+        @if (!string.IsNullOrEmpty(Title))
+        {
+            <h1 style="text-align:center">@Title</h1>
+        }
+    </div>
+    <div id="main-section" class="main-section">
+        @ChildContent
+    </div>
+    @if (Footer != null)
+    {
+        <footer class="bottom-section">
+            @Footer
+        </footer>
+    }
+</div>
+
+
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    [Parameter]
+    public string Title { get; set; } = string.Empty;
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+    [Parameter]
+    public RenderFragment? Footer { get; set; }
+}

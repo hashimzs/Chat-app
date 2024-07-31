@@ -1,0 +1,55 @@
+﻿
+.page-container {
+    display: flex;
+    flex-direction: column;
+    padding:1rem 0;
+    gap: 1rem;
+}
+
+
+.section-title {
+    color: var(--fg-muted);
+    padding-bottom: 10px;
+    font-size: 12px;
+}
+
+.profile-section {
+    background-color: var(--bg-faint);
+    border-radius: 0.5rem;
+    padding: 1.2rem;
+}
+
+
+.user-outer-container {
+    display: flex;
+    justify-content: space-between;
+    align-items:start;
+}
+
+.user-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.user-image {
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--accent-base);
+    aspect-ratio: 1/1;
+    height: 5rem;
+    color: var(--fg-base);
+    font-size: 3rem;
+}
+
+.user-name {
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.email {
+    font-size: 0.8rem;
+    color: var(--fg-subtle);
+}

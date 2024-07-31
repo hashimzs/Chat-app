@@ -1,0 +1,30 @@
+﻿@page "/Login"
+@layout EmptyLayout
+@using Library.Components
+@using Library.Layout
+@using Library.Services
+@using library.Dtos
+
+<FormPage Model="loginReq" Title="Login" OnValidSumbit="LoginClickedHandler">
+    <MdInputBox Title="Email" @bind-Value="loginReq.Email" ValidationFor="()=>loginReq.Email" />
+    <MdInputBox Type="password" Title="Password" @bind-Value="loginReq.Password" ValidationFor="()=>loginReq.Password" />
+    <p style="font-size:0.8rem">Don't have an account <a href="register">Sign up</a></p>
+    <MdButton Type="submit">
+        Login
+    </MdButton>
+</FormPage>
+
+@code {
+    [Inject]
+    public AuthService authService { get; set; } = null!;
+    [Inject]
+    public NavigationManager navigationManager { get; set; } = null!;
+    public LoginReqDto loginReq { get; set; } = new();
+
+    public async Task LoginClickedHandler()
+    {
+        await this.authService.Login(loginReq);
+
+        navigationManager.NavigateTo("");
+    }
+}

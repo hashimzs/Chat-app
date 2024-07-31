@@ -1,0 +1,39 @@
+﻿@typeparam TItem
+
+<section>
+    <EditForm Model="Model" OnValidSubmit="OnValidSubmitHandler">
+        <DataAnnotationsValidator />
+        <h1>@Title</h1>
+        @if (!string.IsNullOrEmpty(ErrorMessage))
+        {
+            <p class="error">@ErrorMessage</p>
+        }
+        @ChildContent
+    </EditForm>
+</section>
+
+@code {
+    [Parameter]
+    public string Title { get; set; } = string.Empty;
+    public string ErrorMessage { get; set; } = string.Empty;
+    [Parameter]
+    public TItem Model { get; set; }
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public EventCallback OnValidSumbit { get; set; }
+
+    public async Task OnValidSubmitHandler()
+    {
+        try
+        {
+            await this.OnValidSumbit.InvokeAsync();
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = ex.Message;
+        }
+    }
+
+}

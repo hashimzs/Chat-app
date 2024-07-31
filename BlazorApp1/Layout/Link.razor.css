@@ -1,0 +1,37 @@
+﻿.link {
+    background-color: var(--bg-base);
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-bottom: 1px solid var(--border-base);
+    border-top: 1px solid var(--border-base);
+    font-size: 1rem;
+    min-height: 62px;
+    cursor:pointer;
+    text-decoration:none;
+    color:black;
+}
+
+    .link:hover {
+        background-color: var(--button-hover);
+    }
+
+    .link i {
+        font-size: 1.5rem;
+        width: 40px;
+        display:grid;
+        place-items:center;
+    }
+
+
+@media only screen and (min-width : 1000px) {
+    .link.collapse {
+        justify-content: center;
+    }
+
+        .link.collapse > .link-text {
+            display: none;
+        }
+}
+

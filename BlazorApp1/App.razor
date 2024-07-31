@@ -1,12 +1,114 @@
-﻿<Router AppAssembly="@typeof(App).Assembly">
-    <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
-        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
-    </Found>
-    <NotFound>
-        <PageTitle>Not found</PageTitle>
-        <LayoutView Layout="@typeof(MainLayout)">
-            <p role="alert">Sorry, there's nothing at this address.</p>
-        </LayoutView>
-    </NotFound>
-</Router>
+﻿@using Blazored.LocalStorage
+@using Library.Services
+
+@if (render)
+{
+    <Router AppAssembly="@typeof(App).Assembly">
+        <Found Context="routeData">
+            <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+        </Found>
+        <NotFound>
+            <PageTitle>Not found</PageTitle>
+            <LayoutView Layout="@typeof(MainLayout)">
+                <p role="alert">Sorry, there's nothing at this address.</p>
+            </LayoutView>
+        </NotFound>
+    </Router>
+}
+<Microsoft.AspNetCore.Components.Sections.SectionContent SectionName="ThemeSwitcher">
+    <div class="radios">
+        <Library.Components.RadioButton TValue="bool" Label="Light theme" FieldValue="false" Value="IsDark" ValueChanged="SetIsDark" />
+        <Library.Components.RadioButton TValue="bool" Label="Dark theme" FieldValue="true" Value="IsDark" ValueChanged="SetIsDark" />
+    </div>
+</Microsoft.AspNetCore.Components.Sections.SectionContent>
+
+@if (IsDark)
+{
+    <style>
+        :root {
+            --bg-base: #181818;
+            --bg-faint: #242424;
+            --bg-subtle: #313535;
+            --bg-muted: #464e4e;
+            --bg-emphasis: #5d6565;
+            --bg-reverse: #fff;
+            --bg-backdrop: rgba(#000000,0.75);
+            --fg-base: #fff;
+            --fg-subtle: #737d7d;
+            --fg-muted: #a5acac;
+            --fg-reverse: #000;
+            --border-base: #313535;
+            --border-emphasis: #464e4e;
+            --accent-base: #3b3abe;
+            --accent-faint: #14145d;
+            --accent-subtle: #1e1e80;
+            --accent-muted: #2a2aa2;
+            --accent-emphasis: #5d5cde;
+            --accent-bold: #b4b4fd;
+            --accent-on-accent: #fff;
+        }
+
+        * {
+            color: white;
+        }
+    </style>
+
+}
+else
+{
+    <style>
+        :root {
+            --bg-base: #fff;
+            --bg-faint: #f7f7f7;
+            --bg-subtle: #f1f2f2;
+            --bg-muted: #e4e7e7;
+            --bg-emphasis: #a5acac;
+            --fg-base: #000;
+            --fg-subtle: #8d9696;
+            --fg-muted: #5d6565;
+            --fg-reverse: #fff;
+            --accent-base: #5d5cde;
+            --accent-faint: #ebecff;
+            --accent-subtle: #d2d2fe;
+            --accent-muted: #7878f2;
+            --accent-emphasis: #3b3abe;
+            --accent-bold: #1e1e80;
+            --border-base: #e4e7e7;
+            --border-emphasis: #cfd3d3;
+            --button-hover: linear-gradient(rgb(0 0 0/3%) 0 0);
+            --red: #ad1840;
+        }
+    </style>
+}
+
+@code {
+    [Inject]
+    public AuthService authService { get; set; } = null!;
+    [Inject]
+    public NavigationManager navigationManager { get; set; } = null!;
+    [Inject]
+    public ILocalStorageService localStorageService { get; set; } = null!;
+    public bool IsDark { get; set; }
+
+    public bool render { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (await this.authService.IsLoggedIn())
+            await this.authService.AddDefaultReqHeaders();
+        else
+            navigationManager.NavigateTo("login");
+
+        IsDark = await this.localStorageService.GetItemAsync<bool>("IsDark");
+
+        render = true;
+    }
+
+
+    public async Task SetIsDark(bool value)
+    {
+        IsDark = value;
+        await this.localStorageService.SetItemAsync<bool>("IsDark", value);
+    }
+
+}

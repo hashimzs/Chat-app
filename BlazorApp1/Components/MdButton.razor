@@ -1,0 +1,33 @@
+﻿<button @onclick="OnClickHandler" type="@Type">
+    @if (!IsLoading)
+    {
+        @ChildContent
+    }
+    else
+    {
+        <div style="visibility:hidden">
+            @ChildContent
+        </div>
+        <div class="loading-container">
+            <LoadingIndicator />
+        </div>
+    }
+</button>
+
+@code {
+    [Parameter]
+    public string Type { get; set; } = "button";
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+    [Parameter]
+    public EventCallback OnClick { get; set; }
+
+    public bool IsLoading { get; set; }
+
+    public async Task OnClickHandler()
+    {
+        IsLoading = true;
+        await OnClick.InvokeAsync();
+        IsLoading = false;
+    }
+}

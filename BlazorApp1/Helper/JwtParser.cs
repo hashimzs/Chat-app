@@ -1,7 +1,7 @@
 ﻿using System.Security.Claims;
 using System.Text.Json;
 
-namespace chatbot2.helper
+namespace library.helper
 {
     public static class JwtParser
     {
