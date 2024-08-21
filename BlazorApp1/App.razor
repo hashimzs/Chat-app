@@ -46,6 +46,7 @@
             --accent-emphasis: #5d5cde;
             --accent-bold: #b4b4fd;
             --accent-on-accent: #fff;
+            --body-max-width:1000px;
         }
 
         * {
@@ -77,6 +78,7 @@ else
             --border-emphasis: #cfd3d3;
             --button-hover: linear-gradient(rgb(0 0 0/3%) 0 0);
             --red: #ad1840;
+            --body-max-width: 1000px;
         }
     </style>
 }
@@ -88,6 +90,8 @@ else
     public NavigationManager navigationManager { get; set; } = null!;
     [Inject]
     public ILocalStorageService localStorageService { get; set; } = null!;
+    [Inject]
+    public ChatStompService chatStompService { get; set; } = null!;
     public bool IsDark { get; set; }
 
     public bool render { get; set; }
@@ -95,7 +99,11 @@ else
     protected override async Task OnInitializedAsync()
     {
         if (await this.authService.IsLoggedIn())
+        {
             await this.authService.AddDefaultReqHeaders();
+            await this.authService.getUserInfo();
+            await this.chatStompService.Connect();
+        }
         else
             navigationManager.NavigateTo("login");
 

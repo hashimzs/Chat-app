@@ -1,0 +1,67 @@
+﻿﻿
+<div class="text-container" data-replicated-value="@Value">
+    @if (IsDisabled)
+    {
+        <textarea rows="1" @bind="Value" @bind:event="oninput" placeholder="@Placeholder" disabled @onkeyup="EnterClickedHandler" />
+    }
+    else
+    {
+        <textarea rows="1" @bind="Value" @bind:event="oninput" placeholder="@Placeholder" @onkeyup="EnterClickedHandler" />
+    }
+</div>
+
+@code {
+    [Parameter]
+    public string Placeholder { get; set; } = string.Empty;
+    [Parameter]
+    public string Value
+    {
+        get => _value; set
+        {
+            if (_value == value) return;
+            _value = value;
+            ValueChanged.InvokeAsync(value);
+        }
+    }
+    [Parameter]
+    public EventCallback<string> ValueChanged { get; set; }
+    [Parameter]
+    public EventCallback<string> OnEnterClicked { get; set; }
+
+    [Parameter]
+    public bool IsDisabled { get; set; }
+
+    private string _value { get; set; } = string.Empty;
+
+    public static int CountLines(string input)
+    {
+        if (string.IsNullOrEmpty(input))
+        {
+            return 1;
+        }
+
+        int lineCount = 1; // At least one line if the string is not empty
+
+        foreach (char c in input)
+        {
+            if (c == '\n')
+            {
+                lineCount++;
+            }
+        }
+
+        return lineCount;
+    }
+
+
+    public void EnterClickedHandler(KeyboardEventArgs args)
+    {
+        if (args.Key != "Enter" || args.ShiftKey == true)
+            return;
+
+        OnEnterClicked.InvokeAsync(Value);
+
+        Value = string.Empty;
+    }
+
+}

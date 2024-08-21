@@ -1,13 +1,15 @@
 ﻿@page "/profile"
 @using Blazored.LocalStorage
 @using System.Security.Claims
+@using Library.Dtos
 @using Library.Layout
 @using Library.Services
+@using Library.Components
 @using library.helper
 @layout MainLayout
 
 
-@if (Claims != null)
+@if (user != null)
 {
     <PageLayout Title="Profile">
         <div class="page-container">
@@ -15,26 +17,7 @@
                 <div class="section-title">
                     User data
                 </div>
-                <div class="profile-section">
-                    <div class="user-outer-container">
-                        <div class="user-container">
-                            <div class="user-image">
-                                @Claims.First(v => v.Type == "unique_name").Value.ToUpper().First()
-                            </div>
-                            <div class="user-info">
-                                <div class="user-name">
-                                    @Claims.First(v => v.Type == "unique_name").Value
-                                </div>
-                                <div class="user-email">
-                                    @Claims.First(v => v.Type == "email").Value
-                                </div>
-                            </div>
-                        </div>
-                        <chatbot2.Components.MdButton OnClick="authService.Logout">
-                            Logout
-                        </chatbot2.Components.MdButton>
-                    </div>
-                </div>
+                <UserCard User="user"/>
             </div>
             <div>
                 <div class="section-title">
@@ -54,18 +37,14 @@
     [Inject]
     public ILocalStorageService localStorageService { get; set; } = null!;
 
-    public IEnumerable<Claim>? Claims { get; set; }
+    public UserDto? user { get; set; }
 
     public bool IsDark { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         IsDark = await this.localStorageService.GetItemAsync<bool>("IsDark");
-        var token = await this.localStorageService.GetItemAsync<string>("token");
-
-        if (token == null) return;
-
-        Claims = JwtParser.ParseClaimsFromJwt(token);
+        user= await this.authService.getUserInfo();
     }
 
     public async Task SetIsDark(bool value)

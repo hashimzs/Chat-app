@@ -3,9 +3,9 @@
     public class UserDto
     {
         public long Id {get;set;}
-        public String Username {get;set;}
-        public String Email {get;set;}
-        public String ImageUrl {get;set;}
+        public string Username {get;set;}=string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string ImageUrl { get; set; } = string.Empty;
 
     }
 }

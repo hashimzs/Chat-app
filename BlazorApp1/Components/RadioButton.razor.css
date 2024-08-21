@@ -1,2 +1,36 @@
-﻿body {
+﻿﻿.radio-container {
+    display: flex;
+    align-items: center;
+    width: fit-content;
+    gap: 1rem;
+    cursor: pointer;
+}
+
+.radio-dot {
+    background-color: var(--bg-base);
+    border-radius: 50%;
+    border: 1px solid var(--border-base);
+    aspect-ratio: 1/1;
+    height: 20px;
+    position: relative;
+}
+
+    .radio-dot.active {
+        border: 1px solid var(--accent-base);
+    }
+
+        .radio-dot.active::before {
+            position: absolute;
+            content: '';
+            border-radius: 50%;
+            height: 10px;
+            aspect-ratio: 1/1;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%,-50%);
+            background-color: var(--accent-base);
+        }
+
+.radio-label {
+    font-size: 1.1rem
 }

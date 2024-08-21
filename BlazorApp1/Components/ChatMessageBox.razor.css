@@ -1,0 +1,22 @@
+﻿﻿.message {
+    padding: 0.75rem;
+    background-color: var(--bg-faint);
+    font-size: 1.2rem;
+    border-radius: 0.5rem;
+    white-space: pre-line;
+    width: fit-content;
+    display:flex;
+    gap:0.5rem;
+    flex-direction:column;
+}
+
+.user-name{
+    font-size:0.9rem;
+}
+
+.message.user {
+    background-color: var(--accent-base);
+    color: var(--bg-base);
+    width: fit-content;
+    align-self: end;
+}

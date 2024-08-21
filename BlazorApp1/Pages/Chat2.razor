@@ -1,0 +1,204 @@
+﻿@page "/chat/{Id:int}"
+@page "/chat"
+@implements IDisposable
+@using Library.Components
+@using Library.Dtos
+@using Library.Layout
+@using Library.Services
+@using library.Dtos
+
+
+<PageLayout>
+    <ChildContent>
+        <div id="mcon" class="messages-container">
+            <div class="messages-inner-container">
+                @foreach (var message in OldMessages)
+                {
+                    <ChatMessageBox Message="message" />
+                }
+            </div>
+            <div class="messages-inner-container" style="margin-top: 1rem;">
+                @foreach (var message in Messages)
+                {
+                    <ChatMessageBox Message="message" />
+                }
+            </div>
+            @if (ErrorOccured)
+            {
+                <div class="try-again-container">
+                    <MdButton OnClick="TryAgain">
+                        Try again
+                    </MdButton>
+                </div>
+            }
+        </div>
+    </ChildContent>
+    <Footer>
+        <Library.Components.MdTextBox Placeholder="write message here" IsDisabled="GeneratingResponse" OnEnterClicked="OnEnterClickedHanlder" />
+    </Footer>
+</PageLayout>
+
+
+
+
+@code {
+    [Inject]
+    public AuthService authService { get; set; } = null!;
+    [Inject]
+    public NavigationManager navigationManager { get; set; } = null!;
+    [Inject]
+    public ChatStompService stompService { get; set; } = null;
+    [Inject]
+    public ChatService chatService { get; set; } = null!;
+    [Inject]
+    public IJSRuntime JSRuntime { get; set; } = null!;
+    [Parameter]
+    public int Id { get; set; }
+
+    List<MessageDto> Messages = new List<MessageDto>();
+    List<MessageDto> OldMessages = new List<MessageDto>();
+
+    public bool ScrollBottomAfterRender { get; set; } = true;
+
+    public bool GeneratingResponse = false;
+
+    public bool ErrorOccured { get; set; }
+    public UserDto user { get; set; }
+
+    protected override void OnInitialized()
+    {
+        this.stompService.OnMessageRecieved += OnMessage;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        user = await authService.getUserInfo();
+    }
+
+
+    protected override async Task OnParametersSetAsync()
+    {
+        try
+        {
+            if (Id != 0)
+                OldMessages = await this.chatService.GetMessagesByUserIdAsync(Id);
+            else
+                OldMessages = await this.chatService.GetPublicMessagesAsync();
+
+            Messages = new();
+
+            ScrollBottomAfterRender = true;
+        }
+        catch (Exception)
+        {
+
+        } 
+    }
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (ScrollBottomAfterRender)
+        {
+            await ScrollToBottom();
+            ScrollBottomAfterRender = false;
+        }
+
+    }
+
+    public void OnMessage(MessageDto message)
+    {
+        Console.WriteLine(Id);
+        Console.WriteLine(message.ToUserId);
+        Console.WriteLine(message.FromUserId);
+
+        if(message.ToUserId==Id || message.FromUserId==Id)
+        {
+            Messages.Add(message);
+            ScrollBottomAfterRender = true;
+            StateHasChanged();
+        }
+
+    }
+
+    public async Task OnEnterClickedHanlder(string Message)
+    {
+        try
+        {
+            ErrorOccured = false;
+
+            var NewMessage = new SendMessageDto
+                {
+                    Content = Message,
+                };
+
+            await SendMessage(NewMessage);
+
+        }
+        catch (Exception)
+        {
+            ErrorOccured = true;
+        }
+    }
+
+    public async Task SendMessage(SendMessageDto chatMessageDto)
+    {
+        try
+        {
+            ScrollBottomAfterRender = true;
+            GeneratingResponse = true;
+
+            MessageDto newMessage = null;
+            if (Id == 0)
+                newMessage = await this.chatService.SendMessageAsync(chatMessageDto);
+            else{
+                newMessage = await this.chatService.SendMessageToUser(chatMessageDto, Id);
+                Messages.Add(newMessage);
+            }
+
+
+            ScrollBottomAfterRender = true;
+        }
+        catch (Exception)
+        {
+            ErrorOccured = true;
+        }
+        finally
+        {
+            GeneratingResponse = false;
+        }
+    }
+
+    public async Task TryAgain()
+    {
+        ErrorOccured = false;
+
+        var Message = this.Messages.LastOrDefault()?.Content;
+
+        if (string.IsNullOrEmpty(Message))
+            return;
+
+        var NewMessage = new SendMessageDto
+            {
+              Content = Message,
+            };
+
+        await SendMessage(NewMessage);
+    }
+
+    async Task ScrollToBottom()
+    {
+        await JSRuntime.InvokeVoidAsync("scrollToBottom", "main-section");
+    }
+
+    public void Dispose()
+    {
+        this.stompService.OnMessageRecieved -= OnMessage;
+    }
+}
+
+<style>
+    .main-section {
+        width: 100% !important;
+    }
+</style>

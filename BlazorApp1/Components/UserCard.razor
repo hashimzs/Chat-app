@@ -1,0 +1,34 @@
+﻿@using Library.Dtos
+@using Library.Services
+
+<div class="user-outer-container">
+    <div class="user-container">
+        <div class="user-image">
+            @if (string.IsNullOrEmpty(User.ImageUrl))
+            {
+                @User.Username.Substring(0, 1)
+            }
+            else
+            {
+                <img src="@User.ImageUrl" />
+            }
+        </div>
+        <div class="user-info">
+            <div class="user-name">
+                @User.Username
+            </div>
+            <div class="user-email">
+                @User.Email
+            </div>
+        </div>
+    </div>
+    <MdButton OnClick="authService.Logout">
+        Logout
+    </MdButton>
+</div>
+@code {
+    [Parameter]
+    public UserDto User { get; set; }
+    [Inject]
+    public AuthService authService { get; set; } = null!;
+}

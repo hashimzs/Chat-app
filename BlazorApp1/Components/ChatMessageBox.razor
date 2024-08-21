@@ -1,0 +1,30 @@
+﻿﻿@using Library.Services
+﻿@using Library.Dtos
+<p class="message @UserMessageClass">
+    <div class="user-name">
+        @Message.FromUserName
+    </div>
+    @((MarkupString)Message.Content)
+</p>
+
+@code {
+    public UserDto user { get; set; } = new();
+    [Inject]
+    public AuthService authService { get; set; } = null;
+    [Parameter]
+    public MessageDto Message { get; set; } = new MessageDto();
+
+    public string UserMessageClass { get => Message.FromUserId == user.Id ? "user" : ""; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            user = await this.authService.getUserInfo();
+        }
+        catch (Exception)
+        {
+
+        }
+    }
+}

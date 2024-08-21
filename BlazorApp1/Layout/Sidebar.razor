@@ -1,4 +1,6 @@
 ﻿@using Library.Components
+@using Library.Dtos
+@using Library.Services
 
 <div class="sidebar @SideBarClass @SideBarClass2">
     <div class="sidebar-header">
@@ -16,9 +18,11 @@
     <div class="sidebar-content-outer">
         <div class="sidebar-content-inner">
             <section class="sidebar-content-section">
-                <Link IconClass="fa-solid fa-user" Text="Users" Href="users" />
-                <Link IconClass="fa-solid fa-book" Text="Books" Href="books" />
-                <Link IconClass="fa-solid fa-pen-nib" Text="Authors" Href="authors" />
+                <Link IconClass="fa-solid fa-user" Text="general" Href="chat" />
+                @foreach(var chat in chats)
+                {
+                    <Link Text="@chat.Username" Href="@($"chat/{chat.Id}")" />
+                }
             </section>
             <section class="sidebar-content-section">
                 <Link IconClass="fa-solid fa-gear" Text="Profile" Href="profile" />
@@ -29,6 +33,8 @@
 
 
 @code {
+    [Inject]
+    public ChatService chatService { get; set; } = null!;
     [Inject]
     public NavigationManager navigationManager { get; set; } = null!;
     /// <summary>
@@ -44,6 +50,20 @@
     public bool IsExpanded { get; set; }
     public string SideBarClass { get => IsCollapsed ? "collapse" : ""; }
     public string SideBarClass2 { get => IsExpanded ? "expand" : ""; }
+
+    public List<ChatDto> chats { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            chats =  await this.chatService.GetChatsAsync();
+        }
+        catch (Exception)
+        {
+            
+        }
+    }
 
     public void NavigateToHome()
     {

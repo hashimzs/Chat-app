@@ -11,8 +11,9 @@ namespace Library.Services
         private readonly HttpClient httpClient;
         private readonly ILocalStorageService localStorageService;
         private readonly NavigationManager navigationManager;
+        private UserDto? user = null;
 
-        public AuthService(HttpClient httpClient,ILocalStorageService localStorageService,NavigationManager navigationManager)
+        public AuthService(HttpClient httpClient, ILocalStorageService localStorageService, NavigationManager navigationManager)
         {
             this.httpClient = httpClient;
             this.localStorageService = localStorageService;
@@ -32,7 +33,10 @@ namespace Library.Services
 
         public async Task<UserDto> getUserInfo()
         {
-            return await this.httpClient.GetFromJsonAsync<UserDto>("auth/users");
+            if (user == null)
+                user = await this.httpClient.GetFromJsonAsync<UserDto>("auth/users");
+
+            return user;
         }
 
         public async Task Login(LoginReqDto loginReqDto)
@@ -47,9 +51,9 @@ namespace Library.Services
 
             var token = (await response.Content.ReadFromJsonAsync<LoginResponseDto>()).token;
 
-            await this.localStorageService.SetItemAsync<string>("token",token);
+            await this.localStorageService.SetItemAsync<string>("token", token);
 
-            this.httpClient.DefaultRequestHeaders.Add("token", token);
+            this.httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
         }
 
 
@@ -65,7 +69,7 @@ namespace Library.Services
         {
             var token = await this.localStorageService.GetItemAsync<string>("token");
 
-            if(string.IsNullOrEmpty(token))
+            if (string.IsNullOrEmpty(token))
                 return false;
             return true;
         }
@@ -74,7 +78,7 @@ namespace Library.Services
         {
             var token = await this.localStorageService.GetItemAsync<string>("token");
 
-            this.httpClient.DefaultRequestHeaders.Add("token", token);
+            this.httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
         }
     }
 }

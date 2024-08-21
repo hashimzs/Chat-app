@@ -15,8 +15,6 @@ namespace library.Dtos
         [EmailAddress]
         public string Email { get; set; } = string.Empty;
         [Required]
-        [MinLength(8,ErrorMessage = "The password must have alteast a length of 8 ")]
-        [RegularExpression("^(?=.*[A-Z]).*$", ErrorMessage ="The password must have atleast have one uppercase letter")]
-        public string Password { get; set; } = string.Empty;
+         public string Password { get; set; } = string.Empty;
     }
 }
